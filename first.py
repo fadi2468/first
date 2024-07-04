@@ -6,5 +6,4 @@ print("fourth")
 print("fifth")
 print("six")
 print("seven")
-print("eight")
-print("nine")
+
