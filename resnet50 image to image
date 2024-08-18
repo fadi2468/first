@@ -1,6 +1,6 @@
 import os
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from PIL import Image
@@ -55,9 +55,19 @@ transform = A.Compose([
 
 # --- DataLoader ---
 
-def get_dataloaders(image_dir, label_dir, batch_size=8, shuffle=True):
+def get_dataloaders(image_dir, label_dir, batch_size=8, valid_size=0.2, shuffle=True):
     dataset = CustomImageDataset(image_dir=image_dir, label_dir=label_dir, transform=transform)
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+    
+    # Split the dataset into training and validation sets
+    num_train = int((1 - valid_size) * len(dataset))
+    num_valid = len(dataset) - num_train
+    train_dataset, val_dataset = random_split(dataset, [num_train, num_valid])
+    
+    # Create DataLoaders
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    
+    return train_loader, val_loader
 
 
 # --- Model Definition (Using timm) ---
@@ -75,15 +85,16 @@ class ResNet50Model(nn.Module):
         return x
 
 
-# --- Training Loop ---
+# --- Training and Validation Loop ---
 
-def train(model, dataloader, criterion, optimizer, num_epochs=5, device='cuda'):
+def train(model, train_loader, val_loader, criterion, optimizer, num_epochs=5, device='cuda'):
     model.to(device)
-    model.train()
 
     for epoch in range(num_epochs):
-        epoch_loss = 0.0
-        for images, labels in tqdm(dataloader):
+        # Training phase
+        model.train()
+        train_loss = 0.0
+        for images, labels in tqdm(train_loader, desc=f"Training Epoch {epoch+1}/{num_epochs}"):
             images, labels = images.to(device), labels.to(device)
 
             optimizer.zero_grad()
@@ -92,9 +103,25 @@ def train(model, dataloader, criterion, optimizer, num_epochs=5, device='cuda'):
             loss.backward()
             optimizer.step()
 
-            epoch_loss += loss.item()
+            train_loss += loss.item()
 
-        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss / len(dataloader)}')
+        train_loss /= len(train_loader)
+        print(f'Train Loss: {train_loss:.4f}')
+
+        # Validation phase
+        model.eval()
+        val_loss = 0.0
+        with torch.no_grad():
+            for images, labels in tqdm(val_loader, desc=f"Validation Epoch {epoch+1}/{num_epochs}"):
+                images, labels = images.to(device), labels.to(device)
+
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+
+                val_loss += loss.item()
+
+        val_loss /= len(val_loader)
+        print(f'Validation Loss: {val_loss:.4f}')
 
 
 # --- Main Function ---
@@ -103,8 +130,8 @@ def main():
     image_dir = 'path_to_your_images'  # Replace with your image directory
     label_dir = 'path_to_your_labels'  # Replace with your label (target) image directory
 
-    # Create DataLoader
-    dataloader = get_dataloaders(image_dir, label_dir, batch_size=8)
+    # Create DataLoaders
+    train_loader, val_loader = get_dataloaders(image_dir, label_dir, batch_size=8)
 
     # Initialize Model, Loss Function, and Optimizer
     model = ResNet50Model()
@@ -112,7 +139,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
     # Train the Model
-    train(model, dataloader, criterion, optimizer, num_epochs=5)
+    train(model, train_loader, val_loader, criterion, optimizer, num_epochs=5)
 
     # Save the model's state_dict
     torch.save(model.state_dict(), 'resnet50_custom.pth')
