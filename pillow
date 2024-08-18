@@ -1,0 +1,152 @@
+from PIL import Image, ImageFilter, ImageEnhance, ImageDraw, ImageFont
+import matplotlib.pyplot as plt
+import os
+
+# Helper function to display images using Matplotlib
+def show_image(image, title="Image"):
+    plt.imshow(image)
+    plt.title(title)
+    plt.axis("off")
+    plt.show()
+
+# Load an example image
+try:
+    image = Image.open("example.jpg")  # Replace with your image file
+except FileNotFoundError:
+    # Create a dummy image for demonstration if no image is provided
+    image = Image.new("RGB", (400, 400), color=(73, 109, 137))
+    draw = ImageDraw.Draw(image)
+    draw.text((50, 200), "Example Image", fill=(255, 255, 255))
+    image.save("example.jpg")
+
+# Show the original image
+show_image(image, "Original Image")
+
+# 1. Image Mode and Format Information
+print(f"Image Mode: {image.mode}")  # RGB, L, RGBA, etc.
+print(f"Image Size: {image.size}")  # (width, height)
+print(f"Image Format: {image.format}")  # JPEG, PNG, etc.
+print()
+
+# 2. Convert image to grayscale
+gray_image = image.convert("L")
+show_image(gray_image, "Grayscale Image")
+
+# 3. Resize the image
+resized_image = image.resize((200, 200))
+show_image(resized_image, "Resized Image")
+
+# 4. Rotate the image
+rotated_image = image.rotate(45)
+show_image(rotated_image, "Rotated Image")
+
+# 5. Flip the image horizontally
+flipped_image = image.transpose(Image.FLIP_LEFT_RIGHT)
+show_image(flipped_image, "Flipped Image")
+
+# 6. Apply Gaussian Blur
+blurred_image = image.filter(ImageFilter.GaussianBlur(5))
+show_image(blurred_image, "Gaussian Blurred Image")
+
+# 7. Enhance image contrast
+enhancer = ImageEnhance.Contrast(image)
+enhanced_image = enhancer.enhance(2)  # Increase contrast by a factor of 2
+show_image(enhanced_image, "Enhanced Contrast")
+
+# 8. Enhance image brightness
+enhancer = ImageEnhance.Brightness(image)
+brightened_image = enhancer.enhance(1.5)  # Increase brightness by a factor of 1.5
+show_image(brightened_image, "Brightened Image")
+
+# 9. Enhance image sharpness
+enhancer = ImageEnhance.Sharpness(image)
+sharpened_image = enhancer.enhance(2)  # Increase sharpness by a factor of 2
+show_image(sharpened_image, "Sharpened Image")
+
+# 10. Crop the image
+cropped_image = image.crop((50, 50, 300, 300))
+show_image(cropped_image, "Cropped Image")
+
+# 11. Draw on the image
+draw_image = image.copy()
+draw = ImageDraw.Draw(draw_image)
+draw.rectangle([50, 50, 300, 300], outline="red", width=5)
+draw.ellipse([150, 150, 250, 250], outline="blue", width=5)
+draw.line([50, 350, 350, 50], fill="yellow", width=5)
+draw.text((50, 350), "Pillow Text", fill="white")
+show_image(draw_image, "Drawn Image")
+
+# 12. Add text to the image using a custom font
+draw_image = image.copy()
+draw = ImageDraw.Draw(draw_image)
+try:
+    font = ImageFont.truetype("arial.ttf", 40)  # Replace with your font path
+except IOError:
+    font = ImageFont.load_default()  # Fallback if the font is not available
+draw.text((50, 350), "Custom Font", fill="white", font=font)
+show_image(draw_image, "Custom Font Text")
+
+# 13. Create a thumbnail of the image
+thumbnail_image = image.copy()
+thumbnail_image.thumbnail((100, 100))
+show_image(thumbnail_image, "Thumbnail Image")
+
+# 14. Save the image in a different format
+image.save("example_converted.png")
+print("Image saved as 'example_converted.png'.")
+print()
+
+# 15. Merge different image channels (e.g., RGB channels)
+r, g, b = image.split()
+merged_image = Image.merge("RGB", (b, g, r))  # Swap the red and blue channels
+show_image(merged_image, "Merged Channels Image")
+
+# 16. Convert image to HSV and back to RGB
+hsv_image = image.convert("HSV")
+rgb_image = hsv_image.convert("RGB")
+show_image(rgb_image, "Converted HSV to RGB")
+
+# 17. Apply a filter to detect edges
+edges_image = image.filter(ImageFilter.FIND_EDGES)
+show_image(edges_image, "Edges Detected")
+
+# 18. Adjust the image color balance
+color_enhancer = ImageEnhance.Color(image)
+enhanced_color_image = color_enhancer.enhance(2.0)
+show_image(enhanced_color_image, "Enhanced Color")
+
+# 19. Add alpha channel (transparency) to the image
+rgba_image = image.convert("RGBA")
+alpha_channel = Image.new("L", rgba_image.size, 128)  # Create a new alpha channel
+rgba_image.putalpha(alpha_channel)
+show_image(rgba_image, "Image with Alpha Channel")
+
+# 20. Blend two images together
+image2 = Image.new("RGB", image.size, color="yellow")  # Create a solid yellow image
+blended_image = Image.blend(image, image2, alpha=0.5)
+show_image(blended_image, "Blended Image")
+
+# 21. Create an image with a solid color background and add text
+solid_image = Image.new("RGB", (400, 400), color="blue")
+draw = ImageDraw.Draw(solid_image)
+draw.text((100, 200), "Solid Color Background", fill="white", anchor="mm")
+show_image(solid_image, "Solid Color Background with Text")
+
+# 22. Convert Image Modes (e.g., RGB to Grayscale, Grayscale to Binary)
+binary_image = gray_image.point(lambda x: 0 if x < 128 else 255, '1')
+show_image(binary_image, "Binary Image")
+
+# 23. Alpha compositing (Overlaying an image with transparency onto another)
+overlay = Image.new("RGBA", image.size, (255, 0, 0, 128))  # Red overlay with 50% transparency
+composited_image = Image.alpha_composite(rgba_image, overlay)
+show_image(composited_image, "Alpha Composite Image")
+
+# 24. Convert an image to a numpy array and back
+image_array = np.array(image)
+print(f"Image converted to numpy array with shape: {image_array.shape}")
+image_from_array = Image.fromarray(image_array)
+show_image(image_from_array, "Image from Numpy Array")
+
+# Cleanup: Remove saved files if necessary
+os.remove("example_converted.png")
+print("Cleanup complete. 'example_converted.png' has been removed.")
