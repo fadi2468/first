@@ -1,0 +1,138 @@
+import cv2
+import numpy as np
+import albumentations as A
+from matplotlib import pyplot as plt
+
+# --- Albumentations Examples ---
+
+# Helper function to display images
+def show_image(image, title="Image"):
+    plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    plt.title(title)
+    plt.axis("off")
+    plt.show()
+
+# Load an example image
+image = cv2.imread("example.jpg")  # Replace with your image file
+if image is None:
+    # Create a dummy image for demonstration if no image is provided
+    image = np.zeros((400, 400, 3), dtype=np.uint8)
+    cv2.putText(image, "Example Image", (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.imwrite("example.jpg", image)
+
+# Show the original image
+show_image(image, "Original Image")
+
+# 1. Basic Horizontal Flip
+transform = A.HorizontalFlip(p=1.0)
+flipped = transform(image=image)["image"]
+show_image(flipped, "Horizontal Flip")
+
+# 2. Vertical Flip
+transform = A.VerticalFlip(p=1.0)
+flipped = transform(image=image)["image"]
+show_image(flipped, "Vertical Flip")
+
+# 3. Rotate the image by a random angle between -45 and 45 degrees
+transform = A.Rotate(limit=45, p=1.0)
+rotated = transform(image=image)["image"]
+show_image(rotated, "Random Rotation")
+
+# 4. Random Crop
+transform = A.RandomCrop(width=200, height=200, p=1.0)
+cropped = transform(image=image)["image"]
+show_image(cropped, "Random Crop")
+
+# 5. Resize the image
+transform = A.Resize(width=300, height=300, p=1.0)
+resized = transform(image=image)["image"]
+show_image(resized, "Resized Image")
+
+# 6. Random Brightness and Contrast adjustment
+transform = A.RandomBrightnessContrast(p=1.0)
+adjusted = transform(image=image)["image"]
+show_image(adjusted, "Random Brightness/Contrast")
+
+# 7. Gaussian Blur
+transform = A.GaussianBlur(blur_limit=7, p=1.0)
+blurred = transform(image=image)["image"]
+show_image(blurred, "Gaussian Blur")
+
+# 8. Random Snow effect
+transform = A.RandomSnow(p=1.0)
+snowy = transform(image=image)["image"]
+show_image(snowy, "Random Snow Effect")
+
+# 9. Random Rain effect
+transform = A.RandomRain(p=1.0)
+rainy = transform(image=image)["image"]
+show_image(rainy, "Random Rain Effect")
+
+# 10. Random Shadow effect
+transform = A.RandomShadow(p=1.0)
+shadowed = transform(image=image)["image"]
+show_image(shadowed, "Random Shadow Effect")
+
+# 11. Random Sun Flare effect
+transform = A.RandomSunFlare(p=1.0)
+sun_flare = transform(image=image)["image"]
+show_image(sun_flare, "Random Sun Flare Effect")
+
+# 12. Channel Shuffle (randomly shuffle RGB channels)
+transform = A.ChannelShuffle(p=1.0)
+shuffled = transform(image=image)["image"]
+show_image(shuffled, "Channel Shuffle")
+
+# 13. Combine multiple augmentations in a single pipeline
+transform = A.Compose([
+    A.HorizontalFlip(p=0.5),
+    A.VerticalFlip(p=0.5),
+    A.Rotate(limit=45, p=0.5),
+    A.RandomBrightnessContrast(p=0.5),
+    A.GaussianBlur(blur_limit=7, p=0.5),
+])
+augmented = transform(image=image)["image"]
+show_image(augmented, "Combined Augmentations")
+
+# 14. Augmentations with bounding boxes
+# Example bounding box (x_min, y_min, x_max, y_max) in Pascal VOC format
+bboxes = [(50, 50, 300, 300)]
+bbox_labels = ["object"]
+
+transform = A.Compose([
+    A.HorizontalFlip(p=0.5),
+    A.Rotate(limit=45, p=0.5),
+    A.RandomBrightnessContrast(p=0.5),
+], bbox_params=A.BboxParams(format="pascal_voc", label_fields=["bbox_labels"]))
+
+augmented = transform(image=image, bboxes=bboxes, bbox_labels=bbox_labels)
+augmented_image = augmented["image"]
+augmented_bboxes = augmented["bboxes"]
+
+# Draw the augmented bounding box on the image
+for bbox in augmented_bboxes:
+    x_min, y_min, x_max, y_max = map(int, bbox)
+    cv2.rectangle(augmented_image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+show_image(augmented_image, "Augmentations with Bounding Box")
+
+# 15. Augmentations with masks
+# Create a simple mask (e.g., a white square on a black background)
+mask = np.zeros_like(image[:, :, 0])
+mask[100:300, 100:300] = 255
+
+transform = A.Compose([
+    A.HorizontalFlip(p=0.5),
+    A.Rotate(limit=45, p=0.5),
+    A.RandomBrightnessContrast(p=0.5),
+])
+
+augmented = transform(image=image, mask=mask)
+augmented_image = augmented["image"]
+augmented_mask = augmented["mask"]
+
+# Show the augmented image and mask
+show_image(augmented_image, "Augmented Image with Mask")
+plt.imshow(augmented_mask, cmap="gray")
+plt.title("Augmented Mask")
+plt.axis("off")
+plt.show()
