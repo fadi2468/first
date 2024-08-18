@@ -1,30 +1,23 @@
 #!/bin/bash
 
-# --- Basic Git Configuration ---
-
-# Set your Git username
+# Basic Git Configuration
+# Set your Git username globally
 git config --global user.name "Your Name"
 
-# Set your Git email
+# Set your Git email globally
 git config --global user.email "your.email@example.com"
 
 # Set the default editor for Git
 git config --global core.editor "your-editor"
 
-# Display the current configuration
+# Display the current Git configuration
 git config --list
-
-
-# --- Initializing a Repository ---
 
 # Initialize a new Git repository in the current directory
 git init
 
 # Clone an existing repository from a URL
 git clone <repository-url>
-
-
-# --- Working with Branches ---
 
 # List all branches in your repository
 git branch
@@ -41,26 +34,20 @@ git checkout -b <branch-name>
 # Merge the specified branch into the current branch
 git merge <branch-name>
 
-
-# --- Tracking and Staging Changes ---
-
 # Show the status of changes as untracked, modified, or staged
 git status
 
-# Stage a specific file
+# Stage a specific file for commit
 git add <file>
 
-# Stage all changes in the current directory
+# Stage all changes in the current directory for commit
 git add .
 
-# Unstage a file
+# Unstage a file (remove it from the staging area)
 git reset <file>
 
 # Show changes between the working directory and the staging area
 git diff
-
-
-# --- Committing Changes ---
 
 # Commit staged changes with a message
 git commit -m "Your commit message"
@@ -68,17 +55,11 @@ git commit -m "Your commit message"
 # Commit all changes, including unstaged ones, with a message
 git commit -a -m "Your commit message"
 
-
-# --- Pushing and Pulling Changes ---
-
 # Push changes to the specified branch on the remote repository
 git push origin <branch-name>
 
 # Fetch and merge changes from the remote repository to the current branch
 git pull
-
-
-# --- Remote Repositories ---
 
 # List the current configured remote repositories
 git remote -v
@@ -89,9 +70,6 @@ git remote add origin <url>
 # Remove a remote repository
 git remote remove <name>
 
-
-# --- Inspecting History ---
-
 # View the commit history
 git log
 
@@ -100,9 +78,6 @@ git log --oneline
 
 # Show details of a specific commit
 git show <commit-hash>
-
-
-# --- Undoing Changes ---
 
 # Discard changes in the working directory
 git checkout -- <file>
@@ -113,9 +88,6 @@ git revert <commit>
 # Reset the working directory and staging area to a specific commit
 git reset --hard <commit>
 
-
-# --- Working with Tags ---
-
 # List all tags in the repository
 git tag
 
@@ -125,23 +97,59 @@ git tag <tag-name>
 # Push a tag to the remote repository
 git push origin <tag-name>
 
-
-# --- Git and Conda Environment ---
-
 # Export the environment’s packages list to a text file
 conda list --explicit > requirements.txt
 
 # Export the environment to a YAML file
 conda env export > environment.yml
 
+# GitHub Commands
+# Create a new repository on GitHub
+# (Requires GitHub CLI installed and authenticated)
+gh repo create <repository-name> --public
 
-# --- Working with Submodules ---
+# Fork a repository on GitHub
+gh repo fork <repository-url>
 
-# Add a new submodule
-git submodule add <repository-url>
+# View your repositories on GitHub
+gh repo list
 
-# Initialize the submodules
-git submodule init
+# Create a pull request on GitHub
+gh pr create --title "Title of the PR" --body "Description of the PR"
 
-# Update the submodules to the latest commit
-git submodule update
+# View pull requests on GitHub
+gh pr list
+
+# Merge a pull request on GitHub
+gh pr merge <pr-number>
+
+# Add a collaborator to a GitHub repository
+gh repo add-collaborator <collaborator-username>
+
+# View issues on a GitHub repository
+gh issue list
+
+# Create a new issue on a GitHub repository
+gh issue create --title "Title of the Issue" --body "Description of the Issue"
+
+# Comment on an issue or pull request
+gh issue comment <issue-number> --body "Your comment here"
+
+# Star a repository on GitHub
+gh repo star <repository-url>
+
+# Unstar a repository on GitHub
+gh repo unstar <repository-url>
+
+# View your starred repositories on GitHub
+gh repo list --starred
+
+# Clone a GitHub repository with SSH
+git clone git@github.com:username/repository.git
+
+# Add SSH key to GitHub account (requires setup)
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub | pbcopy  # Copy SSH key to clipboard (for macOS)
+# Manually add the SSH key to your GitHub account: https://github.com/settings/keys
