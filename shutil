@@ -1,0 +1,108 @@
+import shutil
+from pathlib import Path
+import os
+
+# --- Shutil Module Examples ---
+
+# Setup: Create a sample directory and files for demonstration
+base_dir = Path("example_dir")
+base_dir.mkdir(exist_ok=True)
+
+# Create some example files and directories
+(file1 := base_dir / "file1.txt").write_text("This is file 1.")
+(file2 := base_dir / "file2.txt").write_text("This is file 2.")
+(file3 := base_dir / "file3.py").write_text("This is file 3.")
+subdir = base_dir / "subdir"
+subdir.mkdir(exist_ok=True)
+(file4 := subdir / "file4.txt").write_text("This is file 4.")
+
+# 1. Copy a file to a new location
+copied_file_path = base_dir / "copied_file.txt"
+shutil.copy(file1, copied_file_path)
+print(f"File '{file1}' copied to '{copied_file_path}'.")
+print()
+
+# 2. Copy a file with metadata (permissions, modification times)
+copied_file_with_metadata = base_dir / "copied_file_with_metadata.txt"
+shutil.copy2(file2, copied_file_with_metadata)
+print(f"File '{file2}' copied to '{copied_file_with_metadata}' with metadata.")
+print()
+
+# 3. Copy an entire directory tree to a new location
+copied_dir = base_dir / "copied_dir"
+shutil.copytree(subdir, copied_dir)
+print(f"Directory '{subdir}' copied to '{copied_dir}'.")
+print()
+
+# 4. Move a file or directory to a new location
+moved_file_path = base_dir / "moved_file.txt"
+shutil.move(file3, moved_file_path)
+print(f"File '{file3}' moved to '{moved_file_path}'.")
+print()
+
+# 5. Delete an entire directory tree
+shutil.rmtree(copied_dir)
+print(f"Directory '{copied_dir}' and its contents have been deleted.")
+print()
+
+# 6. Create a zip archive of a directory
+archive_name = "example_archive"
+shutil.make_archive(archive_name, 'zip', base_dir)
+print(f"Directory '{base_dir}' archived into '{archive_name}.zip'.")
+print()
+
+# 7. Extract the contents of an archive
+extracted_dir = Path("extracted_dir")
+shutil.unpack_archive(f"{archive_name}.zip", extracted_dir)
+print(f"Archive '{archive_name}.zip' extracted into '{extracted_dir}'.")
+print()
+
+# 8. Copy file permissions from one file to another
+shutil.copymode(file1, copied_file_path)
+print(f"Permissions of '{file1}' copied to '{copied_file_path}'.")
+print()
+
+# 9. Copy file metadata (times, permissions, etc.) from one file to another
+shutil.copystat(file1, copied_file_with_metadata)
+print(f"Metadata of '{file1}' copied to '{copied_file_with_metadata}'.")
+print()
+
+# 10. Copy file to a directory
+shutil.copy(file4, base_dir)
+print(f"File '{file4}' copied to directory '{base_dir}'.")
+print()
+
+# 11. Get disk usage statistics for a given path
+total, used, free = shutil.disk_usage(base_dir)
+print(f"Disk usage for '{base_dir}':")
+print(f"  Total: {total // (1024 ** 3)} GB")
+print(f"  Used: {used // (1024 ** 3)} GB")
+print(f"  Free: {free // (1024 ** 3)} GB")
+print()
+
+# 12. Create a temporary directory and copy files into it
+temp_dir = Path(shutil.mkdtemp())
+shutil.copy(file1, temp_dir / "temp_file.txt")
+print(f"File '{file1}' copied to temporary directory '{temp_dir}'.")
+print()
+
+# 13. Copy a symbolic link (without copying the contents)
+os.symlink(file2, "symlink_to_file2.txt")
+shutil.copy("symlink_to_file2.txt", "copied_symlink.txt")
+print("Symbolic link 'symlink_to_file2.txt' copied to 'copied_symlink.txt'.")
+print()
+
+# 14. Find which programs are using a specific file (Note: This is system-dependent)
+# For example, use `lsof` on Unix or `handle` on Windows
+# Uncomment the line below to test on Unix (requires lsof)
+# os.system(f"lsof {file1}")
+# On Windows, you might use `os.system("handle file1.txt")`
+
+# Cleanup: Remove all created files and directories
+shutil.rmtree(base_dir)
+shutil.rmtree(extracted_dir)
+os.remove(f"{archive_name}.zip")
+shutil.rmtree(temp_dir)
+os.remove("symlink_to_file2.txt")
+os.remove("copied_symlink.txt")
+print("Cleanup complete. All created files and directories have been removed.")
