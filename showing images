@@ -1,0 +1,116 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
+import torch
+
+# --- Load and Convert Image to NumPy Array ---
+
+# Load an image using PIL
+image_path = "example.jpg"  # Replace with your image file path
+image = Image.open(image_path)
+
+# Convert image to NumPy array
+image_np = np.array(image)
+print("Image as NumPy Array:\n", image_np)
+
+# Plot the original image
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(image_np)
+plt.title("Original Image (NumPy Array)")
+plt.axis("off")
+
+# Example: Perform a simple operation (e.g., convert to grayscale)
+if len(image_np.shape) == 3 and image_np.shape[2] == 3:  # If the image is RGB
+    image_gray = np.mean(image_np, axis=2).astype(np.uint8)  # Convert to grayscale by averaging the channels
+    print("Grayscale Image as NumPy Array:\n", image_gray)
+
+    # Plot the grayscale image
+    plt.subplot(1, 2, 2)
+    plt.imshow(image_gray, cmap='gray')
+    plt.title("Grayscale Image (NumPy Array)")
+    plt.axis("off")
+else:
+    print("Image is already grayscale.")
+
+plt.show()
+
+# --- Handling an Image in PyTorch Tensor Format ---
+
+# Convert the NumPy array to a PyTorch tensor
+image_tensor = torch.from_numpy(image_np).permute(2, 0, 1)  # Convert HWC to CHW format if it's an RGB image
+print("Image as PyTorch Tensor:\n", image_tensor)
+
+# Perform a simple operation on the tensor (e.g., normalize)
+image_tensor_normalized = image_tensor.float() / 255.0  # Normalize to [0, 1] range
+print("Normalized Image Tensor:\n", image_tensor_normalized)
+
+# Convert the tensor back to NumPy array for plotting
+image_np_after = image_tensor_normalized.permute(1, 2, 0).numpy()  # Convert back to HWC format for plotting
+print("Image After Normalization as NumPy Array:\n", image_np_after)
+
+# Plot the image after conversion back from tensor
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(image_np)
+plt.title("Original Image (NumPy Array)")
+plt.axis("off")
+
+plt.subplot(1, 2, 2)
+plt.imshow(image_np_after)
+plt.title("After Normalization (Back to NumPy Array)")
+plt.axis("off")
+
+plt.show()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+import matplotlib.pyplot as plt
+from PIL import Image
+import torch
+
+# --- Load and Show Image Directly ---
+
+# Load an image using PIL
+image_path = "example.jpg"  # Replace with your image file path
+image = Image.open(image_path)
+
+# Show the original image directly using Matplotlib
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(image)
+plt.title("Original Image (PIL)")
+plt.axis("off")
+
+# Example: Convert to grayscale directly using PIL
+image_gray = image.convert("L")  # Convert to grayscale
+plt.subplot(1, 2, 2)
+plt.imshow(image_gray, cmap='gray')
+plt.title("Grayscale Image (PIL)")
+plt.axis("off")
+
+plt.show()
+
+# --- Handling an Image as a PyTorch Tensor ---
+
+# Convert the PIL image to a PyTorch tensor directly
+image_tensor = torch.tensor(np.array(image)).permute(2, 0, 1)  # Convert HWC to CHW format if it's an RGB image
+print("Image as PyTorch Tensor:\n", image_tensor)
+
+# Perform a simple operation on the tensor (e.g., normalize)
+image_tensor_normalized = image_tensor.float() / 255.0  # Normalize to [0, 1] range
+
+# Convert the tensor back to PIL image for display
+image_pil_after = Image.fromarray((image_tensor_normalized.permute(1, 2, 0).numpy() * 255).astype('uint8'))
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(image)
+plt.title("Original Image (PIL)")
+plt.axis("off")
+
+plt.subplot(1, 2, 2)
+plt.imshow(image_pil_after)
+plt.title("After Normalization (Back to PIL)")
+plt.axis("off")
+
+plt.show()
