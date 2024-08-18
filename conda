@@ -1,0 +1,138 @@
+#!/bin/bash
+
+# --- Conda Basics ---
+
+# Display information about the current Conda installation
+conda info
+
+# List all installed Conda packages
+conda list
+
+# Update Conda to the latest version
+conda update conda
+
+# Update all installed packages in the current environment
+conda update --all
+
+
+# --- Managing Environments ---
+
+# Create a new environment with a specific Python version
+conda create --name <env_name> python=3.8
+
+# Activate an environment
+conda activate <env_name>
+
+# Deactivate the current environment
+conda deactivate
+
+# List all Conda environments
+conda env list
+
+# Remove an environment
+conda remove --name <env_name> --all
+
+# Delete an environment by name (alternative way)
+conda env remove --name <env_name>
+
+# Create a new environment with default Python version
+conda create --name <env_name>
+
+# Create a new environment with multiple packages
+conda create --name <env_name> python=3.8 numpy scipy pandas
+
+# Clone an existing environment
+conda create --name <new_env_name> --clone <existing_env_name>
+
+
+# --- Managing Packages ---
+
+# Install a package in the current environment
+conda install <package_name>
+
+# Install a package from a specific channel (e.g., conda-forge)
+conda install -c conda-forge <package_name>
+
+# Install a package with a specific version
+conda install <package_name>=<version>
+
+# Remove a package from the current environment
+conda remove <package_name>
+
+# Search for a package in the Conda repositories
+conda search <package_name>
+
+# List the dependencies of a package
+conda info <package_name>
+
+
+# --- Managing Environment Files ---
+
+# Export the environment’s packages to a YAML file
+conda env export > environment.yml
+
+# Create an environment from a YAML file
+conda env create -f environment.yml
+
+# Export the environment’s packages to a plain text file (e.g., for pip)
+conda list --explicit > requirements.txt
+
+# Create an environment from a plain text file
+conda create --name <env_name> --file requirements.txt
+
+
+# --- Cloning and Managing Environments ---
+
+# Clone an existing environment
+conda create --name <new_env_name> --clone <existing_env_name>
+
+# List the packages explicitly installed in the current environment
+conda list --explicit
+
+# Copy the exact environment to another machine (using the explicit file)
+conda create --name <env_name> --file requirements.txt
+
+
+# --- Cleaning Up ---
+
+# Remove unused packages and cached files
+conda clean --all
+
+# Remove all unused environments and their packages
+conda env remove --name <env_name>
+
+
+# --- Working with Channels ---
+
+# Add a channel to your Conda configuration
+conda config --add channels <channel_name>
+
+# List all channels in your Conda configuration
+conda config --get channels
+
+# Remove a channel from your Conda configuration
+conda config --remove channels <channel_name>
+
+# Set a channel as the highest priority (top of the list)
+conda config --add channels <channel_name> --prepend
+
+# List the current Conda configuration
+conda config --show
+
+
+# --- Miscellaneous ---
+
+# Display the Conda manual/help
+conda --help
+
+# List all Conda commands and their options
+conda --help
+
+# Install a specific Python version in an existing environment
+conda install python=3.7
+
+# Install pip in the current environment
+conda install pip
+
+# List all available Conda commands
+conda list --revisions
