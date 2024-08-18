@@ -1,0 +1,89 @@
+from imutils import paths
+import os
+from pathlib import Path
+
+# Setup: Create a sample directory and files for demonstration
+base_dir = Path("example_images")
+subdir1 = base_dir / "subdir1"
+subdir2 = base_dir / "subdir2"
+subdir1.mkdir(parents=True, exist_ok=True)
+subdir2.mkdir(parents=True, exist_ok=True)
+
+# Create some example image files
+(file1 := subdir1 / "image1.jpg").write_text("Image 1 content")
+(file2 := subdir1 / "image2.png").write_text("Image 2 content")
+(file3 := subdir2 / "image3.bmp").write_text("Image 3 content")
+(file4 := subdir2 / "image4.jpg").write_text("Image 4 content")
+
+# --- Imutils Paths Examples ---
+
+# 1. List all image paths in a directory (non-recursive)
+print("Listing all image files in 'subdir1' (non-recursive):")
+image_paths = list(paths.list_images(subdir1))
+print(image_paths)
+print()
+
+# 2. List all image paths in a directory and its subdirectories (recursive)
+print("Listing all image files in 'example_images' (recursive):")
+all_image_paths = list(paths.list_images(base_dir))
+print(all_image_paths)
+print()
+
+# 3. List all files in a directory (non-recursive)
+print("Listing all files in 'subdir1' (non-recursive):")
+all_files = list(paths.list_files(subdir1))
+print(all_files)
+print()
+
+# 4. List all files in a directory and its subdirectories (recursive)
+print("Listing all files in 'example_images' (recursive):")
+all_files_recursive = list(paths.list_files(base_dir))
+print(all_files_recursive)
+print()
+
+# 5. List all image files in a directory with a specific file extension
+print("Listing all '.jpg' image files in 'example_images':")
+jpg_files = list(paths.list_files(base_dir, validExts=(".jpg",)))
+print(jpg_files)
+print()
+
+# 6. List all files with specific extensions
+print("Listing all '.jpg' and '.png' image files in 'example_images':")
+jpg_png_files = list(paths.list_files(base_dir, validExts=(".jpg", ".png")))
+print(jpg_png_files)
+print()
+
+# 7. List all file paths that do not match a certain extension
+print("Listing all files that are not '.jpg' in 'example_images':")
+non_jpg_files = [p for p in paths.list_files(base_dir) if not p.endswith(".jpg")]
+print(non_jpg_files)
+print()
+
+# 8. Get the base name of each file (filename without directory path)
+print("Base names of all files in 'example_images':")
+base_names = [os.path.basename(p) for p in paths.list_files(base_dir)]
+print(base_names)
+print()
+
+# 9. Get the directory name of each file (only the directory path)
+print("Directory names of all files in 'example_images':")
+dir_names = [os.path.dirname(p) for p in paths.list_files(base_dir)]
+print(dir_names)
+print()
+
+# 10. Sorting paths by file names
+print("Sorted image file paths in 'example_images':")
+sorted_image_paths = sorted(paths.list_files(base_dir))
+print(sorted_image_paths)
+print()
+
+# 11. Check if specific file paths exist
+print("Checking if specific file paths exist:")
+for p in all_image_paths:
+    print(f"{p}: {'Exists' if os.path.exists(p) else 'Does not exist'}")
+print()
+
+# Cleanup: Removing all created directories and files
+print("Cleaning up created files and directories.")
+shutil.rmtree(base_dir)
+print("Cleanup complete. All created files and directories have been removed.")
