@@ -1,0 +1,177 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+# --- Matplotlib Examples ---
+
+# 1. Basic Line Plot
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+plt.figure(figsize=(8, 5))
+plt.plot(x, y, label="sin(x)", color="blue")
+plt.title("Basic Line Plot")
+plt.xlabel("x")
+plt.ylabel("sin(x)")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# 2. Scatter Plot
+x = np.random.rand(100)
+y = np.random.rand(100)
+colors = np.random.rand(100)
+sizes = 1000 * np.random.rand(100)
+
+plt.figure(figsize=(8, 5))
+plt.scatter(x, y, c=colors, s=sizes, alpha=0.5, cmap='viridis')
+plt.title("Scatter Plot")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.colorbar()  # Show color scale
+plt.show()
+
+# 3. Bar Plot
+categories = ["A", "B", "C", "D", "E"]
+values = [5, 7, 3, 4, 6]
+
+plt.figure(figsize=(8, 5))
+plt.bar(categories, values, color='skyblue')
+plt.title("Bar Plot")
+plt.xlabel("Category")
+plt.ylabel("Values")
+plt.show()
+
+# 4. Histogram
+data = np.random.randn(1000)
+
+plt.figure(figsize=(8, 5))
+plt.hist(data, bins=30, color='green', alpha=0.7)
+plt.title("Histogram")
+plt.xlabel("Value")
+plt.ylabel("Frequency")
+plt.show()
+
+# 5. Pie Chart
+labels = ['Apples', 'Bananas', 'Cherries', 'Dates']
+sizes = [15, 30, 45, 10]
+explode = (0, 0.1, 0, 0)  # "explode" the 2nd slice (i.e., Bananas)
+
+plt.figure(figsize=(8, 5))
+plt.pie(sizes, explode=explode, labels=labels, colors=['red', 'yellow', 'pink', 'brown'], autopct='%1.1f%%',
+        shadow=True, startangle=140)
+plt.title("Pie Chart")
+plt.show()
+
+# 6. Box Plot
+data = [np.random.normal(0, std, 100) for std in range(1, 4)]
+
+plt.figure(figsize=(8, 5))
+plt.boxplot(data, vert=True, patch_artist=True)
+plt.title("Box Plot")
+plt.xlabel("Distribution")
+plt.ylabel("Values")
+plt.show()
+
+# 7. Heatmap
+data = np.random.rand(10, 10)
+
+plt.figure(figsize=(8, 5))
+plt.imshow(data, cmap='hot', interpolation='nearest')
+plt.title("Heatmap")
+plt.colorbar()  # Show color scale
+plt.show()
+
+# 8. Subplots
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+plt.figure(figsize=(10, 8))
+
+plt.subplot(2, 1, 1)  # (rows, cols, panel number)
+plt.plot(x, y1, label="sin(x)", color="blue")
+plt.title("Subplot 1: sin(x)")
+plt.grid(True)
+
+plt.subplot(2, 1, 2)
+plt.plot(x, y2, label="cos(x)", color="red")
+plt.title("Subplot 2: cos(x)")
+plt.grid(True)
+
+plt.tight_layout()  # Adjust subplots to fit into the figure area.
+plt.show()
+
+# 9. Logarithmic Scale Plot
+x = np.linspace(0.1, 10, 100)
+y = np.exp(x)
+
+plt.figure(figsize=(8, 5))
+plt.plot(x, y, label="exp(x)", color="purple")
+plt.yscale("log")
+plt.title("Logarithmic Scale Plot")
+plt.xlabel("x")
+plt.ylabel("log(exp(x))")
+plt.grid(True)
+plt.show()
+
+# 10. 3D Plot
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
+
+x = np.linspace(-5, 5, 100)
+y = np.linspace(-5, 5, 100)
+x, y = np.meshgrid(x, y)
+z = np.sin(np.sqrt(x**2 + y**2))
+
+ax.plot_surface(x, y, z, cmap='viridis')
+ax.set_title("3D Surface Plot")
+ax.set_xlabel("X axis")
+ax.set_ylabel("Y axis")
+ax.set_zlabel("Z axis")
+plt.show()
+
+# 11. Customizing Plot Appearance
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+plt.figure(figsize=(8, 5))
+plt.plot(x, y, label="sin(x)", color="blue", linestyle='--', marker='o', markersize=5)
+plt.title("Customized Line Plot")
+plt.xlabel("x")
+plt.ylabel("sin(x)")
+plt.legend()
+plt.grid(True)
+plt.xlim(0, 10)
+plt.ylim(-1.5, 1.5)
+plt.show()
+
+# 12. Annotating a Plot
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+plt.figure(figsize=(8, 5))
+plt.plot(x, y, label="sin(x)", color="blue")
+plt.title("Annotated Plot")
+plt.xlabel("x")
+plt.ylabel("sin(x)")
+plt.annotate('Local Max', xy=(np.pi/2, 1), xytext=(np.pi/2+1, 0.8),
+             arrowprops=dict(facecolor='black', shrink=0.05))
+plt.grid(True)
+plt.show()
+
+# 13. Saving a Plot
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+plt.figure(figsize=(8, 5))
+plt.plot(x, y, label="sin(x)", color="blue")
+plt.title("Saved Plot")
+plt.xlabel("x")
+plt.ylabel("sin(x)")
+plt.legend()
+plt.grid(True)
+plt.savefig("saved_plot.png")  # Save the plot as a PNG file
+plt.show()
+print("Plot saved as 'saved_plot.png'.")
