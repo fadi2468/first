@@ -1,0 +1,159 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+# --- Neural Network Layers ---
+
+# 1. Linear Layer (Fully Connected Layer)
+linear_layer = nn.Linear(in_features=4, out_features=3, bias=True)
+input_tensor = torch.rand(2, 4)  # Batch size of 2, input features of 4
+output_tensor = linear_layer(input_tensor)
+print("Linear Layer Output:\n", output_tensor)
+
+# 2. Convolutional Layer (2D)
+conv_layer = nn.Conv2d(in_channels=1, out_channels=3, kernel_size=3, stride=1, padding=1)
+input_tensor = torch.rand(1, 1, 28, 28)  # Batch size of 1, 1 channel, 28x28 image
+output_tensor = conv_layer(input_tensor)
+print("Convolutional Layer Output Shape:", output_tensor.shape)
+
+# 3. Batch Normalization Layer
+bn_layer = nn.BatchNorm1d(num_features=4)
+input_tensor = torch.rand(3, 4)  # Batch size of 3, 4 features
+output_tensor = bn_layer(input_tensor)
+print("Batch Normalization Output:\n", output_tensor)
+
+# 4. Recurrent Layer (LSTM)
+lstm_layer = nn.LSTM(input_size=10, hidden_size=20, num_layers=2, batch_first=True)
+input_tensor = torch.rand(5, 3, 10)  # Batch size of 5, sequence length of 3, input size of 10
+output_tensor, (hn, cn) = lstm_layer(input_tensor)
+print("LSTM Output Shape:", output_tensor.shape)
+
+# 5. Dropout Layer
+dropout_layer = nn.Dropout(p=0.5)
+input_tensor = torch.rand(2, 4)
+output_tensor = dropout_layer(input_tensor)
+print("Dropout Output:\n", output_tensor)
+
+# 6. Embedding Layer
+embedding_layer = nn.Embedding(num_embeddings=10, embedding_dim=3)
+input_tensor = torch.tensor([1, 2, 3, 4])  # Word indices
+output_tensor = embedding_layer(input_tensor)
+print("Embedding Output:\n", output_tensor)
+
+# 7. Flatten Layer
+flatten_layer = nn.Flatten()
+input_tensor = torch.rand(2, 3, 4)  # Batch size of 2, 3x4 input
+output_tensor = flatten_layer(input_tensor)
+print("Flattened Output:\n", output_tensor)
+
+# 8. Sequential Model
+sequential_model = nn.Sequential(
+    nn.Linear(4, 8),
+    nn.ReLU(),
+    nn.Linear(8, 2)
+)
+input_tensor = torch.rand(1, 4)
+output_tensor = sequential_model(input_tensor)
+print("Sequential Model Output:\n", output_tensor)
+
+
+# --- Activation Functions ---
+
+# 9. ReLU Activation Function
+relu_layer = nn.ReLU()
+input_tensor = torch.tensor([-1.0, 0.0, 1.0, 2.0])
+output_tensor = relu_layer(input_tensor)
+print("ReLU Output:\n", output_tensor)
+
+# 10. Sigmoid Activation Function
+sigmoid_layer = nn.Sigmoid()
+output_tensor = sigmoid_layer(input_tensor)
+print("Sigmoid Output:\n", output_tensor)
+
+# 11. Tanh Activation Function
+tanh_layer = nn.Tanh()
+output_tensor = tanh_layer(input_tensor)
+print("Tanh Output:\n", output_tensor)
+
+# 12. Softmax Activation Function
+softmax_layer = nn.Softmax(dim=0)
+input_tensor = torch.tensor([1.0, 2.0, 3.0])
+output_tensor = softmax_layer(input_tensor)
+print("Softmax Output:\n", output_tensor)
+
+# 13. Leaky ReLU Activation Function
+leaky_relu_layer = nn.LeakyReLU(negative_slope=0.1)
+output_tensor = leaky_relu_layer(input_tensor)
+print("Leaky ReLU Output:\n", output_tensor)
+
+
+# --- Loss Functions ---
+
+# 14. Mean Squared Error Loss
+mse_loss = nn.MSELoss()
+input_tensor = torch.tensor([0.0, 0.0, 1.0, 1.0])
+target_tensor = torch.tensor([1.0, 1.0, 0.0, 0.0])
+loss = mse_loss(input_tensor, target_tensor)
+print("MSE Loss:", loss.item())
+
+# 15. Cross Entropy Loss
+cross_entropy_loss = nn.CrossEntropyLoss()
+input_tensor = torch.tensor([[0.1, 0.2, 0.7], [0.3, 0.3, 0.4]])  # Logits
+target_tensor = torch.tensor([2, 1])  # Class indices
+loss = cross_entropy_loss(input_tensor, target_tensor)
+print("Cross Entropy Loss:", loss.item())
+
+# 16. Binary Cross Entropy Loss
+bce_loss = nn.BCELoss()
+input_tensor = torch.tensor([0.9, 0.1, 0.8])
+target_tensor = torch.tensor([1.0, 0.0, 1.0])
+loss = bce_loss(input_tensor, target_tensor)
+print("Binary Cross Entropy Loss:", loss.item())
+
+# 17. Negative Log-Likelihood Loss
+nll_loss = nn.NLLLoss()
+log_probs = torch.log(softmax_layer(torch.tensor([[0.2, 0.8], [0.7, 0.3]])))
+target_tensor = torch.tensor([1, 0])
+loss = nll_loss(log_probs, target_tensor)
+print("Negative Log-Likelihood Loss:", loss.item())
+
+# 18. Hinge Embedding Loss
+hinge_loss = nn.HingeEmbeddingLoss()
+input_tensor = torch.tensor([0.8, -0.5, 1.0])
+target_tensor = torch.tensor([1, -1, 1])
+loss = hinge_loss(input_tensor, target_tensor)
+print("Hinge Embedding Loss:", loss.item())
+
+
+# --- Custom Neural Network Example ---
+
+# 19. Custom Neural Network Model
+class SimpleNN(nn.Module):
+    def __init__(self):
+        super(SimpleNN, self).__init__()
+        self.fc1 = nn.Linear(4, 8)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(8, 3)
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        x = self.softmax(x)
+        return x
+
+# Instantiate and forward pass through the custom model
+model = SimpleNN()
+input_tensor = torch.rand(2, 4)
+output_tensor = model(input_tensor)
+print("Custom Neural Network Output:\n", output_tensor)
+
+# 20. Model Summary and Parameter Count
+total_params = sum(p.numel() for p in model.parameters())
+print("Total Parameters in the Model:", total_params)
+
+# Model summary is typically done with an external library, e.g., torchsummary.
+# Uncomment below lines if torchsummary is installed:
+# from torchsummary import summary
+# summary(model, input_size=(1, 4))
