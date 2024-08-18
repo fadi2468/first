@@ -1,0 +1,105 @@
+import glob
+import os
+
+# --- Glob Module Examples ---
+
+# 1. List all Python files in the current directory
+print("Python files in the current directory:")
+python_files = glob.glob("*.py")
+print(python_files)
+print()
+
+# 2. List all files in the current directory
+print("All files in the current directory:")
+all_files = glob.glob("*")
+print(all_files)
+print()
+
+# 3. List all text files in a specific directory
+directory = "example_dir"
+os.makedirs(directory, exist_ok=True)  # Create the directory for demonstration
+# Create some example files
+with open(os.path.join(directory, "file1.txt"), "w") as f:
+    f.write("This is file 1.")
+with open(os.path.join(directory, "file2.txt"), "w") as f:
+    f.write("This is file 2.")
+with open(os.path.join(directory, "file3.py"), "w") as f:
+    f.write("This is file 3.")
+
+print(f"Text files in '{directory}':")
+text_files = glob.glob(os.path.join(directory, "*.txt"))
+print(text_files)
+print()
+
+# 4. List all files in a directory recursively
+print(f"All files in '{directory}' and its subdirectories:")
+all_files_recursive = glob.glob(os.path.join(directory, "**", "*"), recursive=True)
+print(all_files_recursive)
+print()
+
+# 5. List all Python files in a directory and its subdirectories recursively
+print(f"Python files in '{directory}' and its subdirectories:")
+python_files_recursive = glob.glob(os.path.join(directory, "**", "*.py"), recursive=True)
+print(python_files_recursive)
+print()
+
+# 6. List all files starting with a specific prefix
+prefix = "file"
+print(f"Files starting with '{prefix}' in '{directory}':")
+files_with_prefix = glob.glob(os.path.join(directory, f"{prefix}*"))
+print(files_with_prefix)
+print()
+
+# 7. List all files with a specific single-character name pattern
+print("Files with a single character followed by '.txt' in the directory:")
+single_char_files = glob.glob(os.path.join(directory, "?ile?.txt"))
+print(single_char_files)
+print()
+
+# 8. List all files with numeric characters in the name
+print("Files with numeric characters in the name in the directory:")
+numeric_files = glob.glob(os.path.join(directory, "*[0-9]*"))
+print(numeric_files)
+print()
+
+# 9. List all hidden files (files starting with a dot)
+print("Hidden files in the current directory:")
+hidden_files = glob.glob(".*")
+print(hidden_files)
+print()
+
+# 10. Use `iglob` to iterate over matched files without storing them all in memory
+print("Iterating over all files in the current directory using `iglob`:")
+for filename in glob.iglob("*"):
+    print(filename)
+print()
+
+# 11. List files with different extensions
+print("Files with .txt or .py extensions in the directory:")
+txt_and_py_files = glob.glob(os.path.join(directory, "*.txt")) + glob.glob(os.path.join(directory, "*.py"))
+print(txt_and_py_files)
+print()
+
+# 12. List files with multiple specific patterns
+print("Files with specific patterns (file1.txt and file3.py):")
+specific_files = glob.glob(os.path.join(directory, "file1.txt")) + glob.glob(os.path.join(directory, "file3.py"))
+print(specific_files)
+print()
+
+# 13. Escaping special characters in a file name pattern
+print("Files with special characters in the directory:")
+# Create a file with special characters
+special_file = os.path.join(directory, "[special]*file?.txt")
+with open(special_file, "w") as f:
+    f.write("This is a file with special characters.")
+escaped_pattern = glob.escape(special_file)
+escaped_files = glob.glob(escaped_pattern)
+print(escaped_files)
+print()
+
+# 14. Clean up created files and directories
+print("Cleaning up created files and directories.")
+for file_path in all_files_recursive:
+    os.remove(file_path)
+os.rmdir(directory)
+print("Cleanup complete.")
