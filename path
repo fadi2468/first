@@ -1,0 +1,141 @@
+from pathlib import Path
+import os
+
+# --- Pathlib Module Examples ---
+
+# 1. Create a Path object for the current directory
+current_dir = Path(".")
+print(f"Current directory: {current_dir.resolve()}")
+print()
+
+# 2. Create a Path object for a specific file
+file_path = Path("example_file.txt")
+print(f"File path: {file_path.resolve()}")
+print()
+
+# 3. Check if a path exists
+print(f"Does '{file_path}' exist? {file_path.exists()}")
+print()
+
+# 4. Create a directory
+new_dir = Path("example_dir")
+new_dir.mkdir(exist_ok=True)
+print(f"Directory created: {new_dir.resolve()}")
+print()
+
+# 5. Create nested directories
+nested_dir = Path("example_dir/subdir/subsubdir")
+nested_dir.mkdir(parents=True, exist_ok=True)
+print(f"Nested directory created: {nested_dir.resolve()}")
+print()
+
+# 6. Create a new file
+file_path.write_text("This is an example file.")
+print(f"File created: {file_path.resolve()}")
+print()
+
+# 7. Read the content of a file
+content = file_path.read_text()
+print(f"Content of '{file_path}': {content}")
+print()
+
+# 8. Rename a file
+renamed_file = file_path.with_name("renamed_file.txt")
+file_path.rename(renamed_file)
+print(f"File renamed to: {renamed_file.resolve()}")
+print()
+
+# 9. Copy a file (manually using write and read)
+copied_file = renamed_file.with_name("copied_file.txt")
+copied_file.write_text(renamed_file.read_text())
+print(f"File copied to: {copied_file.resolve()}")
+print()
+
+# 10. Check if a path is a file or directory
+print(f"Is '{copied_file}' a file? {copied_file.is_file()}")
+print(f"Is '{new_dir}' a directory? {new_dir.is_dir()}")
+print()
+
+# 11. List the contents of a directory
+print(f"Contents of '{new_dir}':")
+for item in new_dir.iterdir():
+    print(item)
+print()
+
+# 12. List all .txt files in a directory (non-recursive)
+print(f".txt files in '{new_dir}':")
+txt_files = list(new_dir.glob("*.txt"))
+print(txt_files)
+print()
+
+# 13. List all .txt files in a directory and subdirectories (recursive)
+print(f".txt files in '{new_dir}' and subdirectories:")
+txt_files_recursive = list(new_dir.rglob("*.txt"))
+print(txt_files_recursive)
+print()
+
+# 14. Get the name and extension of a file
+print(f"File name: {copied_file.name}")
+print(f"File extension: {copied_file.suffix}")
+print()
+
+# 15. Get the parent directory of a file
+print(f"Parent directory of '{copied_file}': {copied_file.parent}")
+print()
+
+# 16. Get the stem (file name without extension)
+print(f"File stem of '{copied_file}': {copied_file.stem}")
+print()
+
+# 17. Get the absolute path of a file
+print(f"Absolute path of '{copied_file}': {copied_file.resolve()}")
+print()
+
+# 18. Check if a file is readable, writable, and executable
+print(f"Is '{copied_file}' readable? {copied_file.is_file() and os.access(copied_file, os.R_OK)}")
+print(f"Is '{copied_file}' writable? {copied_file.is_file() and os.access(copied_file, os.W_OK)}")
+print(f"Is '{copied_file}' executable? {copied_file.is_file() and os.access(copied_file, os.X_OK)}")
+print()
+
+# 19. Delete a file
+copied_file.unlink()
+print(f"File '{copied_file}' deleted.")
+print()
+
+# 20. Delete a directory (if empty)
+if not list(nested_dir.iterdir()):
+    nested_dir.rmdir()
+    print(f"Nested directory '{nested_dir}' deleted.")
+print()
+
+# 21. Deleting a directory and all its contents (recursively)
+if new_dir.exists() and new_dir.is_dir():
+    for item in new_dir.rglob("*"):
+        if item.is_file():
+            item.unlink()
+        elif item.is_dir():
+            item.rmdir()
+    new_dir.rmdir()
+    print(f"Directory '{new_dir}' and all its contents deleted.")
+print()
+
+# 22. Iterate over files in a directory and subdirectories
+new_dir.mkdir(exist_ok=True)
+(Path(new_dir / "file1.txt")).write_text("File 1 content")
+(Path(new_dir / "file2.txt")).write_text("File 2 content")
+(Path(new_dir / "subdir/file3.txt")).write_text("File 3 content")
+
+print("Iterating over all files in the directory and subdirectories:")
+for file in new_dir.rglob("*"):
+    if file.is_file():
+        print(f"Found file: {file}")
+print()
+
+# Cleanup: Remove created files and directories
+for file in new_dir.rglob("*"):
+    if file.is_file():
+        file.unlink()
+    elif file.is_dir():
+        file.rmdir()
+new_dir.rmdir()
+print("Cleanup complete. All created files and directories have been removed.")
