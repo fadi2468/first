@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, SimpleImputer
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
@@ -64,11 +66,21 @@ X_scaled = scaler.fit_transform(X_normalized)
 pca = PCA(n_components=0.95)  # Retain 95% of the variance
 X_reduced = pca.fit_transform(X_scaled)
 
-# Section 3: Creating Separate Training, Validation, and Test Sets
+# Section 3: Correlation Matrix
+# Calculate the correlation matrix
+corr_matrix = np.corrcoef(X_reduced.T)  # Transpose to get features as rows
+
+# Create a heatmap to visualize the correlation matrix
+plt.figure(figsize=(12, 10))
+sns.heatmap(corr_matrix, annot=False, cmap='coolwarm', fmt='.2f', square=True)
+plt.title('Correlation Matrix of the Features')
+plt.show()
+
+# Section 4: Creating Separate Training, Validation, and Test Sets
 X_train_val, X_test, Y_train_val, Y_test = train_test_split(X_reduced, Y, test_size=0.2, random_state=42)
 X_train, X_val, Y_train, Y_val = train_test_split(X_train_val, Y_train_val, test_size=0.25, random_state=42)
 
-# Section 4: Model Training and Validation
+# Section 5: Model Training and Validation
 pls = PLSRegression(n_components=2)
 pls.fit(X_train, Y_train)
 
@@ -78,17 +90,17 @@ val_rmse = mean_squared_error(Y_val, Y_val_pred, squared=False)
 print(f'Validation Set R²: {val_r2:.2f}')
 print(f'Validation Set RMSE: {val_rmse:.2f}')
 
-# Section 5: Final Model Training on Full Training Set (Optional)
+# Section 6: Final Model Training on Full Training Set (Optional)
 pls.fit(X_train_val, Y_train_val)
 
-# Section 6: Evaluate the Model on the Test Set
+# Section 7: Evaluate the Model on the Test Set
 Y_test_pred = pls.predict(X_test)
 test_r2 = pls.score(X_test, Y_test)
 test_rmse = mean_squared_error(Y_test, Y_test_pred, squared=False)
 print(f'Test Set R²: {test_r2:.2f}')
 print(f'Test Set RMSE: {test_rmse:.2f}')
 
-# Section 7: Pickling the Final Model
+# Section 8: Pickling the Final Model
 model_filename = 'pls_model.pkl'
 with open(model_filename, 'wb') as file:
     pickle.dump(pls, file)
