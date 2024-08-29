@@ -112,3 +112,12 @@ with open(scaler_filename, 'wb') as file, open(pca_filename, 'wb') as file_pca:
     pickle.dump(pca, file_pca)
 
 print(f'Model saved to {model_filename}')
+
+
+
+
+
+Ridge, Lasso, and Elastic Net: Good for regularization and handling multicollinearity.
+Random Forest, GBM, XGBoost: Excellent for capturing complex, nonlinear relationships with the added benefit of feature importance.
+SVR and Neural Networks: Effective for modeling nonlinear relationships, with neural networks being more powerful for large, complex datasets.
+PCR and k-NN: Simple, interpretable models that can be useful depending on the dataset size and complexity.
