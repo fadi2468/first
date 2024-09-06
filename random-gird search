@@ -1,0 +1,131 @@
+# Import necessary libraries
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from scipy.stats import uniform, loguniform, norm, expon, randint
+
+# Load a sample dataset (Iris dataset in this case)
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+######################################
+# 1. Grid Search with SVM
+######################################
+print("------ Grid Search with SVM ------")
+
+# Define hyperparameters for grid search (SVM)
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'gamma': [0.01, 0.1, 1, 10],
+    'kernel': ['rbf']
+}
+
+# Initialize GridSearchCV
+grid_search = GridSearchCV(SVC(), param_grid, cv=5)
+grid_search.fit(X_train, y_train)
+
+# Output the best parameters and score from Grid Search
+print("Best Grid Search Parameters:", grid_search.best_params_)
+print("Best Grid Search Score:", grid_search.best_score_)
+
+######################################
+# 2. Random Search with SVM (uniform distribution)
+######################################
+print("\n------ Random Search with SVM (uniform distribution) ------")
+
+# Define random search parameters with uniform distribution
+param_dist_uniform = {
+    'C': uniform(0.1, 100),  # C sampled uniformly between 0.1 and 100
+    'gamma': uniform(0.01, 1),  # gamma sampled uniformly between 0.01 and 1
+    'kernel': ['rbf']
+}
+
+# Initialize RandomizedSearchCV with uniform distribution
+random_search_uniform = RandomizedSearchCV(SVC(), param_dist_uniform, n_iter=20, cv=5, random_state=42)
+random_search_uniform.fit(X_train, y_train)
+
+# Output the best parameters and score from Random Search (uniform)
+print("Best Random Search Parameters (uniform):", random_search_uniform.best_params_)
+print("Best Random Search Score (uniform):", random_search_uniform.best_score_)
+
+######################################
+# 3. Random Search with SVM (loguniform distribution)
+######################################
+print("\n------ Random Search with SVM (loguniform distribution) ------")
+
+# Define random search parameters with log-uniform distribution
+param_dist_loguniform = {
+    'C': loguniform(1e-3, 1e3),  # C sampled from loguniform between 0.001 and 1000
+    'gamma': loguniform(1e-4, 1e1),  # gamma sampled from loguniform between 0.0001 and 10
+    'kernel': ['rbf']
+}
+
+# Initialize RandomizedSearchCV with loguniform distribution
+random_search_loguniform = RandomizedSearchCV(SVC(), param_dist_loguniform, n_iter=20, cv=5, random_state=42)
+random_search_loguniform.fit(X_train, y_train)
+
+# Output the best parameters and score from Random Search (loguniform)
+print("Best Random Search Parameters (loguniform):", random_search_loguniform.best_params_)
+print("Best Random Search Score (loguniform):", random_search_loguniform.best_score_)
+
+######################################
+# 4. Random Search with SVM (normal distribution)
+######################################
+print("\n------ Random Search with SVM (normal distribution) ------")
+
+# Define random search parameters with normal distribution
+param_dist_norm = {
+    'C': norm(loc=1, scale=0.5),  # C sampled from normal distribution with mean 1 and std 0.5
+    'gamma': norm(loc=0.1, scale=0.05),  # gamma sampled from normal distribution with mean 0.1 and std 0.05
+    'kernel': ['rbf']
+}
+
+# Initialize RandomizedSearchCV with normal distribution
+random_search_norm = RandomizedSearchCV(SVC(), param_dist_norm, n_iter=20, cv=5, random_state=42)
+random_search_norm.fit(X_train, y_train)
+
+# Output the best parameters and score from Random Search (normal)
+print("Best Random Search Parameters (normal):", random_search_norm.best_params_)
+print("Best Random Search Score (normal):", random_search_norm.best_score_)
+
+######################################
+# 5. Random Search with Random Forest (randint distribution for integer hyperparameters)
+######################################
+print("\n------ Random Search with Random Forest (randint distribution) ------")
+
+# Define random search parameters for Random Forest using randint (integer values)
+param_dist_rf = {
+    'n_estimators': randint(10, 200),  # Number of trees, sampled from 10 to 200
+    'max_depth': randint(1, 10),  # Max depth of the tree, sampled from 1 to 10
+    'min_samples_split': randint(2, 10),  # Minimum number of samples required to split
+}
+
+# Initialize RandomizedSearchCV with randint distribution
+random_search_rf = RandomizedSearchCV(RandomForestClassifier(), param_dist_rf, n_iter=20, cv=5, random_state=42)
+random_search_rf.fit(X_train, y_train)
+
+# Output the best parameters and score from Random Search (Random Forest)
+print("Best Random Search Parameters (Random Forest):", random_search_rf.best_params_)
+print("Best Random Search Score (Random Forest):", random_search_rf.best_score_)
+
+######################################
+# 6. Random Search with SVM (exponential distribution)
+######################################
+print("\n------ Random Search with SVM (exponential distribution) ------")
+
+# Define random search parameters with exponential distribution
+param_dist_expon = {
+    'C': expon(scale=1),  # C sampled from exponential distribution with scale 1
+    'gamma': expon(scale=0.1),  # gamma sampled from exponential distribution with scale 0.1
+    'kernel': ['rbf']
+}
+
+# Initialize RandomizedSearchCV with exponential distribution
+random_search_expon = RandomizedSearchCV(SVC(), param_dist_expon, n_iter=20, cv=5, random_state=42)
+random_search_expon.fit(X_train, y_train)
+
+# Output the best parameters and score from Random Search (exponential)
+print("Best Random Search Parameters (exponential):", random_search_expon.best_params_)
+print("Best Random Search Score (exponential):", random_search_expon.best_score_)
