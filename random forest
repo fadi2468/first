@@ -1,0 +1,43 @@
+# Import necessary libraries
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
+from sklearn.datasets import load_iris
+from scipy.stats import randint
+
+# Load a sample dataset (Iris dataset in this case)
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+######################################
+# Random Search with Random Forest (randint distribution for integer hyperparameters)
+######################################
+
+# Define random search parameters for Random Forest using randint (integer values)
+param_dist_rf = {
+    'n_estimators': randint(10, 200),       # Number of trees in the forest, sampled from 10 to 200
+    'max_depth': randint(1, 20),            # Maximum depth of the tree, sampled from 1 to 20
+    'min_samples_split': randint(2, 20),    # Minimum samples required to split a node, sampled from 2 to 20
+    'min_samples_leaf': randint(1, 20),     # Minimum samples required to be a leaf node, sampled from 1 to 20
+}
+
+# Initialize RandomizedSearchCV with Random Forest
+random_search_rf = RandomizedSearchCV(
+    RandomForestClassifier(random_state=42),   # Random Forest model
+    param_dist_rf,                             # Hyperparameter distributions
+    n_iter=20,                                 # Number of random combinations to try
+    cv=5,                                      # 5-fold cross-validation
+    random_state=42,                           # Ensure reproducibility
+    n_jobs=-1                                  # Use all available cores for parallel computation
+)
+
+# Fit RandomizedSearchCV on the training data
+random_search_rf.fit(X_train, y_train)
+
+# Output the best parameters and score from Random Search (Random Forest)
+print("Best Random Search Parameters (Random Forest):", random_search_rf.best_params_)
+print("Best Random Search Score (Random Forest):", random_search_rf.best_score_)
+
+# Evaluate the best model on the test data
+best_model = random_search_rf.best_estimator_
+test_score = best_model.score(X_test, y_test)
+print("Test set score with best parameters:", test_score)
