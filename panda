@@ -34,6 +34,7 @@ df['age'].fillna(df['age'].mean(), inplace=True)
 df['total_price'] = df['quantity'] * df['price_per_unit']
 df['age'] = df['age'] + 1
 df['discount_price'] = df.apply(lambda row: row['price'] * 0.9 if row['quantity'] > 10 else row['price'], axis=1)
+filtered_df = df[(df['age'] > 30) | (~df['employed'])]
 
 # 7. Changing Values Based on Conditions
 # Apply a function with a condition
