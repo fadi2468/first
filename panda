@@ -1,0 +1,152 @@
+import pandas as pd
+import numpy as np
+
+# 1. Reading Data
+df = pd.read_csv('data.csv')
+df_excel = pd.read_excel('data.xlsx')
+
+# 2. Basic Inspection
+print(df.head())
+print(df.shape)
+print(df.columns)
+print(df.info())
+print(df.describe())
+
+# 3. Selecting Data
+age_column = df['age']
+selected_columns = df[['name', 'age', 'salary']]
+row_5 = df.iloc[5]
+row_by_label = df.loc['label_name']
+filtered_df = df[df['age'] > 30]
+filtered_query = df.query('age > 30 & salary > 50000')
+
+# 4. Sorting Data
+sorted_by_age = df.sort_values('age', ascending=True)
+sorted_by_age_salary = df.sort_values(['age', 'salary'], ascending=[True, False])
+
+# 5. Handling Missing Data
+print(df.isnull())
+df_no_na = df.dropna()
+df_filled_na = df.fillna(0)
+df['age'].fillna(df['age'].mean(), inplace=True)
+
+# 6. Creating and Modifying Columns
+df['total_price'] = df['quantity'] * df['price_per_unit']
+df['age'] = df['age'] + 1
+df['discount_price'] = df.apply(lambda row: row['price'] * 0.9 if row['quantity'] > 10 else row['price'], axis=1)
+
+# 7. Changing Values Based on Conditions
+# Apply a function with a condition
+df['category'] = df['age'].apply(lambda x: 'Senior' if x > 60 else 'Adult')
+
+# Using numpy where for conditional values
+df['status'] = np.where(df['salary'] > 50000, 'High Salary', 'Low Salary')
+
+# Nested condition example
+df['rating'] = df.apply(lambda row: 'A' if row['sales'] > 1000 else ('B' if row['sales'] > 500 else 'C'), axis=1)
+
+# More complex condition: change based on multiple columns
+df['performance'] = np.where((df['sales'] > 500) & (df['age'] > 30), 'Good', 'Needs Improvement')
+
+# 8. Grouping and Aggregation
+grouped = df.groupby('gender').mean()
+grouped_agg = df.groupby('gender').agg({'age': 'mean', 'salary': ['mean', 'max']})
+pivot_table = df.pivot_table(index='gender', columns='department', values='salary', aggfunc='mean')
+
+# 9. Merging and Concatenating DataFrames
+merged_df = pd.merge(df, df_excel, on='employee_id')
+concatenated_df = pd.concat([df, df_excel], axis=0)
+concatenated_df_columns = pd.concat([df, df_excel], axis=1)
+
+# 10. Removing Duplicates
+df_no_duplicates = df.drop_duplicates()
+df_no_duplicates_specific = df.drop_duplicates(subset='name')
+
+# 11. Reshaping Data
+df_long = df.melt(id_vars='id', value_vars=['Jan', 'Feb', 'Mar'], var_name='Month', value_name='Sales')
+df_wide = df.pivot(index='id', columns='Month', values='Sales')
+
+# 12. Renaming Columns
+df.rename(columns={'old_column_name': 'new_column_name'}, inplace=True)
+df.rename(columns={'old_col1': 'new_col1', 'old_col2': 'new_col2'}, inplace=True)
+
+# 13. Indexing and Resetting Index
+df.set_index('id', inplace=True)
+df.reset_index(inplace=True)
+
+# 14. Applying Functions to Columns
+df['new_column'] = df['existing_column'].apply(lambda x: x + 10)
+df['total'] = df.apply(lambda row: row['price'] * row['quantity'], axis=1)
+
+# 15. Working with Time Series
+df['date'] = pd.to_datetime(df['date_column'])
+df['year'] = df['date'].dt.year
+df['month'] = df['date'].dt.month
+df['day'] = df['date'].dt.day
+
+# 16. Advanced Aggregations
+total_sales = df[df['category'] == 'electronics']['sales'].sum()
+agg_df = df.groupby('category').agg({
+    'sales': ['sum', 'mean'],
+    'profit': ['max', 'min']
+})
+
+# 17. Handling Categorical Data
+# Convert a column to categorical type
+df['department'] = df['department'].astype('category')
+
+# Get unique categories
+unique_departments = df['department'].unique()
+
+# Rename categories in a column
+df['department'] = df['department'].cat.rename_categories({
+    'HR': 'Human Resources',
+    'IT': 'Information Technology'
+})
+
+# Reorder categories
+df['rating'] = df['rating'].astype('category', categories=['C', 'B', 'A'], ordered=True)
+
+# 18. Creating Custom Functions
+def calculate_performance(row):
+    if row['sales'] > 1000 and row['profit'] > 200:
+        return 'Excellent'
+    elif row['sales'] > 500:
+        return 'Good'
+    else:
+        return 'Average'
+
+df['performance'] = df.apply(calculate_performance, axis=1)
+
+# 19. Data Validation and Cleaning
+# Detect invalid values (e.g., negative sales)
+invalid_sales = df[df['sales'] < 0]
+
+# Replace invalid values (e.g., set negative sales to 0)
+df['sales'] = df['sales'].apply(lambda x: x if x > 0 else 0)
+
+# Checking for inconsistent data types
+inconsistent_data = df.select_dtypes(exclude=['int', 'float', 'datetime'])
+
+# Removing outliers based on standard deviation
+mean_sales = df['sales'].mean()
+std_sales = df['sales'].std()
+df_no_outliers = df[(df['sales'] >= mean_sales - 3*std_sales) & (df['sales'] <= mean_sales + 3*std_sales)]
+
+# 20. Using Rolling Window and Shift Operations
+# Rolling mean on sales (7-day window)
+df['rolling_sales'] = df['sales'].rolling(window=7).mean()
+
+# Shifting column data by 1 row (e.g., lagging sales)
+df['previous_sales'] = df['sales'].shift(1)
+
+# 21. Joining Tables with Different Indexes
+# Left join, right join, and outer join with different indexes
+left_df = df.set_index('employee_id')
+right_df = df_excel.set_index('employee_id')
+left_joined = left_df.join(right_df, how='left')
+outer_joined = left_df.join(right_df, how='outer')
+
+# 22. Exporting Data
+df.to_csv('cleaned_data.csv', index=False)
+df.to_excel('cleaned_data.xlsx', index=False)
