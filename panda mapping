@@ -1,0 +1,128 @@
+import pandas as pd
+import numpy as np
+
+# Sample DataFrame
+data = {
+    'name': ['Alice', 'Bob', 'Cathy', 'David', 'Eve'],
+    'gender': ['Female', 'Male', 'Female', 'Male', 'Non-binary'],
+    'age': [23, 45, 67, 32, 29],
+    'department': ['HR', 'Engineering', 'Finance', 'Sales', 'IT'],
+    'test1_score': [85, 70, 90, 88, 95],
+    'test2_score': [78, 65, 85, 80, 88]
+}
+df = pd.DataFrame(data)
+
+### Example 1: Mapping Values Using a Dictionary ###
+# Mapping gender to numerical codes
+gender_mapping = {
+    'Male': 1,
+    'Female': 0,
+    'Non-binary': 2
+}
+df['gender_code'] = df['gender'].map(gender_mapping)
+
+print("Gender Mapping using Dictionary:")
+print(df[['name', 'gender', 'gender_code']])
+
+### Example 2: Custom Function Mapping for Age Groups ###
+# Define a function to categorize ages
+def age_group(age):
+    if age < 30:
+        return 'Young'
+    elif 30 <= age < 60:
+        return 'Adult'
+    else:
+        return 'Senior'
+
+# Apply custom function to categorize age
+df['age_group'] = df['age'].map(age_group)
+
+print("\nMapping Age Groups using Custom Function:")
+print(df[['name', 'age', 'age_group']])
+
+### Example 3: Handling Missing Values in Map ###
+# Department to code mapping (some departments are missing)
+department_mapping = {
+    'HR': 101,
+    'Engineering': 102,
+    'Finance': 103
+}
+
+# Map department to department codes (missing values will be NaN)
+df['dept_code'] = df['department'].map(department_mapping)
+
+print("\nHandling Missing Values in Map:")
+print(df[['name', 'department', 'dept_code']])
+
+# Fill missing values with a default value (e.g., -1 for unknown)
+df['dept_code_filled'] = df['dept_code'].fillna(-1)
+
+print("\nFilling Missing Values:")
+print(df[['name', 'department', 'dept_code_filled']])
+
+### Example 4: Mapping with Conditions ###
+# Let's map custom grading for scores using map and lambda functions
+def score_to_grade(score):
+    if score >= 85:
+        return 'A'
+    elif score >= 70:
+        return 'B'
+    else:
+        return 'C'
+
+# Map test scores to grades
+df['test1_grade'] = df['test1_score'].map(score_to_grade)
+df['test2_grade'] = df['test2_score'].map(score_to_grade)
+
+print("\nMapping Test Scores to Grades:")
+print(df[['name', 'test1_score', 'test1_grade', 'test2_score', 'test2_grade']])
+
+### Example 5: Multiple Columns Mapping (Applymap) ###
+# Suppose we want to categorize test scores into grades for both tests at once.
+# Using applymap to apply a mapping function element-wise to a DataFrame
+
+# Create a sub-DataFrame for test scores and apply the grading function
+df[['test1_grade_map', 'test2_grade_map']] = df[['test1_score', 'test2_score']].applymap(score_to_grade)
+
+print("\nUsing Applymap to Map Grades Across Multiple Columns:")
+print(df[['name', 'test1_score', 'test1_grade_map', 'test2_score', 'test2_grade_map']])
+
+### Example 6: Map Based on Multiple Columns ###
+# If we want to map performance based on both test scores, we can define a more complex function.
+
+def performance(row):
+    if row['test1_score'] > 85 and row['test2_score'] > 85:
+        return 'Excellent'
+    elif row['test1_score'] > 70 or row['test2_score'] > 70:
+        return 'Good'
+    else:
+        return 'Average'
+
+# Use .apply() across rows to calculate performance
+df['performance'] = df.apply(performance, axis=1)
+
+print("\nMapping Performance Based on Multiple Columns:")
+print(df[['name', 'test1_score', 'test2_score', 'performance']])
+
+### Example 7: Replacing Values with Map ###
+# Replace specific values in 'age_group' with more readable labels
+age_group_replacement = {
+    'Young': 'Youth',
+    'Adult': 'Middle Age',
+    'Senior': 'Senior Citizen'
+}
+
+df['age_group_revised'] = df['age_group'].map(age_group_replacement)
+
+print("\nReplacing Values in Age Group using Map:")
+print(df[['name', 'age', 'age_group', 'age_group_revised']])
+
+### Example 8: Mapping a Series with Missing Data ###
+# Create a sample series with missing values
+scores = pd.Series([85, np.nan, 78, np.nan, 92])
+
+# Map scores to grades, handling NaN values
+scores_grade = scores.map(lambda x: score_to_grade(x) if pd.notna(x) else 'Missing')
+
+print("\nMapping a Series with Missing Data:")
+print(scores_grade)
