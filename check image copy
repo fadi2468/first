@@ -1,0 +1,56 @@
+import os
+import cv2
+from skimage.metrics import structural_similarity as ssim
+import numpy as np
+
+def load_image(image_path):
+    """Load an image from a given path."""
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    return image
+
+def compare_images(image1, image2):
+    """Compare two images using Structural Similarity Index (SSIM)."""
+    if image1.shape != image2.shape:
+        return False  # Skip if dimensions don't match
+    score, _ = ssim(image1, image2, full=True)
+    return score
+
+def find_matching_image(target_image_path, search_path, threshold=0.9):
+    """
+    Search for a matching image in the specified directory.
+    :param target_image_path: Path to the target image.
+    :param search_path: Directory to search for images.
+    :param threshold: Similarity threshold for a match.
+    :return: List of paths to matching images.
+    """
+    target_image = load_image(target_image_path)
+    if target_image is None:
+        raise ValueError("Target image could not be loaded.")
+
+    matching_images = []
+    for root, _, files in os.walk(search_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            try:
+                current_image = load_image(file_path)
+                if current_image is not None:
+                    similarity = compare_images(target_image, current_image)
+                    if similarity >= threshold:
+                        matching_images.append(file_path)
+            except Exception as e:
+                print(f"Error processing file {file_path}: {e}")
+    return matching_images
+
+# Example Usage
+if __name__ == "__main__":
+    target_image_path = "path_to_target_image.jpg"  # Replace with your target image path
+    search_path = "path_to_search_directory"  # Replace with your search directory path
+    threshold = 0.95  # Set your similarity threshold
+
+    matches = find_matching_image(target_image_path, search_path, threshold)
+    if matches:
+        print("Matching images found:")
+        for match in matches:
+            print(match)
+    else:
+        print("No matching images found.")
